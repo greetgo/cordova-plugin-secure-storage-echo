@@ -56,6 +56,8 @@
         <source-file src="src/android/AbstractRSA.java" target-dir="src/com/crypho/plugins/" />
         <source-file src="src/android/RSA.java" target-dir="src/com/crypho/plugins/" />
         <source-file src="src/android/AES.java" target-dir="src/com/crypho/plugins/" />
+        <source-file src="src/android/CryptoUtil.java" target-dir="src/com/crypho/plugins/" />
+        <source-file src="src/android/RSAOAEP.java" target-dir="src/com/crypho/plugins/" />
         <source-file src="src/android/SharedPreferencesHandler.java" target-dir="src/com/crypho/plugins/" />
     </platform>
 
