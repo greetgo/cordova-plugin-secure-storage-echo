@@ -36,7 +36,7 @@ public class SecureStorage extends CordovaPlugin {
     private volatile CallbackContext secureDeviceContext, generateKeysContext, unlockCredentialsContext;
     private volatile boolean generateKeysContextRunning = false;
 
-    private AbstractRSA rsa = RSAFactory.getRSA();
+    private AbstractRSA rsa;
 
     @Override
     public void onResume(boolean multitasking) {
@@ -80,6 +80,7 @@ public class SecureStorage extends CordovaPlugin {
             JSONObject options = args.getJSONObject(1);
 
             String packageName = options.optString("packageName", getContext().getPackageName());
+            this.rsa = RSAFactory.getRSA(args.getString(1));
 
             Context ctx = null;
 
@@ -100,6 +101,16 @@ public class SecureStorage extends CordovaPlugin {
 
             SharedPreferencesHandler PREFS = new SharedPreferencesHandler(alias, ctx);
             SERVICE_STORAGE.put(service, PREFS);
+
+            if(rsa instanceof RSAOAEP) {
+                try {
+                    rsa.createKeyPair(PREFS);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed init rsa of ket storage:", e);
+                    callbackContext.error(e.getMessage());
+                }
+            }
+
             if (!isDeviceSecure()) {
                 Log.e(TAG, MSG_DEVICE_NOT_SECURE);
                 callbackContext.error(MSG_DEVICE_NOT_SECURE);
@@ -274,9 +285,11 @@ public class SecureStorage extends CordovaPlugin {
                     try {
                         String alias = service2alias(INIT_SERVICE);
                         SharedPreferencesHandler storage = getStorage(INIT_SERVICE);
-                        //Solves Issue #96. The RSA key may have been deleted by changing the lock type.
-                        getStorage(INIT_SERVICE).clear();
-                        rsa.createKeyPair(getContext(), alias, userAuthenticationValidityDuration);
+                        if (storage.isEmpty()) {
+                            //Solves Issue #96. The RSA key may have been deleted by changing the lock type.
+                            getStorage(INIT_SERVICE).clear();
+                            rsa.createKeyPair(getContext(), alias, userAuthenticationValidityDuration);
+                        }
                         generateKeysContext.success();
                     } catch (Exception e) {
                         Log.e(TAG, MSG_KEYS_FAILED, e);

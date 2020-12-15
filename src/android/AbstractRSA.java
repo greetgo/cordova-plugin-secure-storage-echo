@@ -49,6 +49,10 @@ public abstract class AbstractRSA {
         }
     }
 
+    public void createKeyPair(SharedPreferencesHandler storage) throws Exception {
+
+    }
+
     public void createKeyPair(Context ctx, String alias, Integer userAuthenticationValidityDuration) throws Exception {
         AlgorithmParameterSpec spec = getInitParams(ctx, alias, userAuthenticationValidityDuration);
         KeyPairGenerator kpGenerator = KeyPairGenerator.getInstance(getRSAKey(), KEYSTORE_PROVIDER);
