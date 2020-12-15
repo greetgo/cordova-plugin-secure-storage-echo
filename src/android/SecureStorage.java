@@ -77,10 +77,11 @@ public class SecureStorage extends CordovaPlugin {
         }
         if ("init".equals(action)) {
             String service = args.getString(0);
-            JSONObject options = args.getJSONObject(1);
+            this.rsa = RSAFactory.getRSA(args.getBoolean(1));
+            JSONObject options = args.getJSONObject(2);
 
             String packageName = options.optString("packageName", getContext().getPackageName());
-            this.rsa = RSAFactory.getRSA(args.getString(1));
+
 
             Context ctx = null;
 
